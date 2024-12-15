@@ -176,7 +176,7 @@ Don't hesitate to ask questions by:
 
 - Opening an issue
 - Joining our Discord server
-- Sending an email to contributors@reactautomator.com
+- Sending an email to melihcandemir@protonmail.com
 
 ## Recognition 🌟
 
