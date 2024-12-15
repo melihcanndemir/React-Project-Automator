@@ -62,8 +62,8 @@ python reactautomationtoolv3.pyw
 ## 🎨 User Interface
 
 <div align="center">
-  <img src="screenshots/features.png" alt="Features Interface" height="400" width="400"/>
-  <img src="screenshots/git.png" alt="Git Integration" height="400" width="400"/>
+  <img src="screenshots/features.png" alt="Features Interface" height="200" width="400"/>
+  <img src="screenshots/git.png" alt="Git Integration" height="200" width="400"/>
 </div>
 
 ## 🔧 Configuration Options
