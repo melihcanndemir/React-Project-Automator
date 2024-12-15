@@ -26,16 +26,19 @@ A modern desktop application for automating React project creation with an intui
 ## 🛠️ Installation
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/yourusername/react-project-automator.git
 ```
 
 2. Install dependencies:
+
 ```bash
 pip install -r requirements.txt
 ```
 
 3. Run the application:
+
 ```bash
 python reactautomationtoolv3.pyw
 ```
@@ -66,11 +69,13 @@ python reactautomationtoolv3.pyw
 ## 🔧 Configuration Options
 
 - **Project Settings**
+
   - Project name and location
   - Template selection
   - Package manager choice
 
 - **Features**
+
   - TypeScript support
   - ESLint configuration
   - Prettier setup
@@ -101,7 +106,7 @@ python reactautomationtoolv3.pyw
 
 ## 📝 Documentation
 
-For detailed documentation, please visit our [Wiki](https://github.com/yourusername/react-project-automator/wiki).
+For detailed documentation, please visit our [Wiki](https://github.com/melihcanndemir/React-Project-Automator/wiki).
 
 ## 🤝 Contributing
 
