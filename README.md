@@ -28,7 +28,7 @@ A modern desktop application for automating React project creation with an intui
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/react-project-automator.git
+git clone https://github.com/melihcanndemir/React-Project-Automator
 ```
 
 2. Install dependencies:
