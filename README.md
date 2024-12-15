@@ -157,5 +157,5 @@ Give a ⭐️ if this project helped you!
 ---
 
 <div align="center">
-  Made with ❤️ by Melih Can
+  Made with ❤️ by Melih Can Demir
 </div>
