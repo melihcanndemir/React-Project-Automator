@@ -150,9 +150,9 @@ Give a ⭐️ if this project helped you!
 
 ## 📊 Stats
 
-![GitHub stars](https://img.shields.io/github/stars/yourusername/react-project-automator?style=social)
-![GitHub forks](https://img.shields.io/github/forks/yourusername/react-project-automator?style=social)
-![GitHub watchers](https://img.shields.io/github/watchers/yourusername/react-project-automator?style=social)
+![GitHub stars](https://img.shields.io/github/stars/melihcanndemir/React-Project-Automator?style=social)
+![GitHub forks](https://img.shields.io/github/forks/melihcanndemir/React-Project-Automator?style=social)
+![GitHub watchers](https://img.shields.io/github/watchers/melihcanndemir/React-Project-Automator?style=social)
 
 ---
 
