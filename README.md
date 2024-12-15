@@ -126,9 +126,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-- Create an [Issue](https://github.com/yourusername/react-project-automator/issues)
-- Join our [Discord](your-discord-link)
-- Email: support@reactautomator.com
+- Create an [Issue](https://github.com/melihcanndemir/React-Project-Automator/issues)
+- Email: melihcandemir@protonmail.com
 
 ## 🌟 Show your support
 
