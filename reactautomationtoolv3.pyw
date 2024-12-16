@@ -546,32 +546,42 @@ class GitIntegration(QWidget):
             self.update_button_states()
     
     def create_commit(self):
-        """Create commit from staged changes"""
-        if not hasattr(self, 'selected_project'):
-            QMessageBox.warning(
-                self,
-                "Error",
-                "Please select a project directory first."
-            )
-            return
-            
+        """Create initial commit"""
         if not self.commit_msg.text():
             QMessageBox.warning(
-                self,
-                "Error",
-                "Please enter a commit message."
+                self, 
+                "Hata", 
+                "Lütfen bir commit mesajı girin!"
             )
             return
             
+        if not self.selected_project:
+            QMessageBox.warning(
+                self,
+                "Hata",
+                "Lütfen önce bir proje seçin!"
+            )
+            return
+
+        # Eğer hala çalışan bir worker varsa onu durdur
         if self.current_worker and self.current_worker.isRunning():
             self.current_worker.stop()
             
-        self.current_worker = GitWorker(self.selected_project, 'commit')
-        self.current_worker.progress.connect(
-            lambda msg: self.main_window.terminal.append_output(msg, "INFO")
+        # Yeni worker'ı oluştur ve referansını sakla
+        self.current_worker = GitWorker(
+            repo_path=self.selected_project,
+            operation='commit',
+            commit_message=self.commit_msg.text()
         )
+        self.current_worker.progress.connect(lambda msg: self.main_window.terminal.append_output(msg, "INFO"))
         self.current_worker.finished.connect(self.handle_git_operation)
         self.current_worker.start()
+    
+    def closeEvent(self, event):
+        """Widget kapatılırken çalışan worker'ı durdur"""
+        if self.current_worker and self.current_worker.isRunning():
+            self.current_worker.stop()
+        super().closeEvent(event)
 
     
     def update_button_states(self, initial=False):
@@ -1538,10 +1548,11 @@ class GitWorker(QThread):
     progress = pyqtSignal(str)
     finished = pyqtSignal(bool, str)
     
-    def __init__(self, repo_path: str, operation: str, remote_url: str = None, branch: str = None):
+    def __init__(self, repo_path: str, operation: str, commit_message: str = None, remote_url: str = None, branch: str = None):
         super().__init__()
         self.repo_path = repo_path
         self.operation = operation
+        self.commit_message = commit_message
         self.remote_url = remote_url
         self.branch = branch
         self._is_running = True
@@ -1564,36 +1575,39 @@ class GitWorker(QThread):
                 self.progress.emit("Creating commit...")
                 repo = git.Repo(self.repo_path)
                 
+                # Add untracked files excluding node_modules
                 repo.index.add([
                     item for item in repo.untracked_files 
                     if not item.startswith('node_modules/')
                 ])
                 
+                # Add modified files
                 changed_files = [item.a_path for item in repo.index.diff(None)]
                 repo.index.add(changed_files)
                 
-                repo.index.commit("Initial commit: Project setup")
-                self.finished.emit(True, "Changes committed successfully")
+                # Use provided commit message or fallback to default
+                message = self.commit_message if self.commit_message else "Initial commit: Project setup"
+                repo.index.commit(message)
+                self.finished.emit(True, f"Changes committed successfully with message: {message}")
                 
             elif self.operation == 'push':
                 self.progress.emit("Pushing to remote...")
                 repo = git.Repo(self.repo_path)
                 
-                # Remote ekle veya güncelle
+                # Add or update remote
                 try:
                     origin = repo.remote('origin')
                     origin.set_url(self.remote_url)
                 except ValueError:
                     origin = repo.create_remote('origin', self.remote_url)
                 
-                # Branch'i kontrol et ve oluştur
+                # Create and checkout branch if needed
                 if self.branch not in repo.heads:
                     repo.create_head(self.branch)
                     
-                # Active branch'i ayarla
                 repo.heads[self.branch].checkout()
                 
-                # Push işlemi
+                # Push changes
                 origin.push(refspec=f'{self.branch}:refs/heads/{self.branch}')
                 self.finished.emit(True, "Changes pushed to remote successfully")
                 
