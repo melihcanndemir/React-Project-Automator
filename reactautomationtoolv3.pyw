@@ -184,6 +184,7 @@ class ModernButton(QPushButton):
         
         self.setStyleSheet(f"""
             ModernButton {{
+                min-width: 100px;
                 background-color: {color};
                 color: {text_color};
                 border: none;
