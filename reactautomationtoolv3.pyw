@@ -5,7 +5,7 @@ A professional-grade desktop application for automating React project creation
 with advanced features and industry-standard practices.
 
 Author: Melih Can Demir, Claude AI, ChatGPT and Other Pre-Trained Models
-Version: 3.0.0
+Version: 3.2.1
 License: MIT
 """
 
@@ -41,7 +41,8 @@ from PyQt5.QtCore import (
 
 from PyQt5.QtChart import QChart, QChartView, QPieSeries, QBarSeries, QBarSet
 
-from modern_icons import ModernIcons
+from app_icon import AppIcon
+from appicons import AppIcons
 
 # Application Constants
 APP_NAME = "Modern React Project Automator"
@@ -324,14 +325,27 @@ class GitIntegration(QWidget):
             self.current_worker.stop()
         super().closeEvent(event)
     
-
-        
     def setup_ui(self):
-        layout = QVBoxLayout(self)
+        # Ana layout
+        main_layout = QVBoxLayout(self)
+        main_layout.setContentsMargins(0, 0, 0, 0)
+        main_layout.setSpacing(0)
+        
+        # Scroll Area
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setFrameShape(QFrame.NoFrame)
+        
+        # Scroll için içerik widget'ı
+        content_widget = QWidget()
+        layout = QVBoxLayout(content_widget)
+        layout.setSpacing(10)
+        layout.setContentsMargins(10, 10, 10, 10)
         
         # Proje Seçimi
         project_group = QGroupBox("Project Selection")
         project_layout = QHBoxLayout()
+        project_layout.setContentsMargins(10, 15, 10, 10)
         
         self.project_path = QLineEdit()
         self.project_path.setPlaceholderText("Select a React project...")
@@ -340,205 +354,303 @@ class GitIntegration(QWidget):
         select_btn = ModernButton(
             "Browse",
             self,
-            icon=ModernIcons.create_folder_icon(self.main_window.current_theme.primary)
+            icon=AppIcons.get_folder_icon()
         )
         select_btn.clicked.connect(self.select_project)
+        select_btn.setFixedWidth(100)
         
         project_layout.addWidget(self.project_path)
         project_layout.addWidget(select_btn)
         project_group.setLayout(project_layout)
         layout.addWidget(project_group)
         
-        # Commit Bölümü
-        commit_group = QGroupBox("Commit Changes")
-        commit_layout = QVBoxLayout()
+        # Remote Repository Configuration
+        remote_group = QGroupBox("Remote Repository")
+        remote_layout = QGridLayout()
+        remote_layout.setContentsMargins(10, 15, 10, 10)
+        remote_layout.setSpacing(10)
         
-        # Değişiklikleri göster
-        self.changes_list = QTextEdit()
-        self.changes_list.setReadOnly(True)
-        self.changes_list.setPlaceholderText("No changes detected")
+        # URL Input
+        url_label = QLabel("Remote URL:")
+        self.url_input = QLineEdit()
+        self.url_input.setPlaceholderText("https://github.com/username/repo.git")
         
-        # Commit mesajı
-        self.commit_msg = QLineEdit()
-        self.commit_msg.setPlaceholderText("Enter commit message...")
+        # Branch Selection - Yatayda hizalama düzeltmesi
+        branch_label = QLabel("Branch:")
+        branch_label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+        self.branch_combo = QComboBox()
+        self.branch_combo.addItems(["main", "master", "develop", "staging"])
+        self.branch_combo.setEditable(True)
         
-        # Commit butonu
-        self.commit_btn = ModernButton(
-            "Commit Changes",
-            self,
-            icon=ModernIcons.create_git_commit_icon("#FFFFFF"),
-            theme=self.main_window.current_theme
-        )
-        self.commit_btn.clicked.connect(self.create_commit)
+        # Grid'e widget'ları ekle
+        remote_layout.addWidget(url_label, 0, 0)
+        remote_layout.addWidget(self.url_input, 0, 1)
+        remote_layout.addWidget(branch_label, 1, 0)
+        remote_layout.addWidget(self.branch_combo, 1, 1)
         
-        commit_layout.addWidget(QLabel("Changed Files:"))
-        commit_layout.addWidget(self.changes_list)
-        commit_layout.addWidget(QLabel("Commit Message:"))
-        commit_layout.addWidget(self.commit_msg)
-        commit_layout.addWidget(self.commit_btn)
+        # Kolonların genişlik ayarı
+        remote_layout.setColumnStretch(1, 1)  # URL input ve branch combo genişleyebilir
         
-        commit_group.setLayout(commit_layout)
-        layout.addWidget(commit_group)
+        remote_group.setLayout(remote_layout)
+        layout.addWidget(remote_group)
         
-        # Diğer Git işlemleri...
+        # Git Operations
         operations_group = QGroupBox("Git Operations")
         operations_layout = QVBoxLayout()
+        operations_layout.setContentsMargins(10, 15, 10, 10)
+        operations_layout.setSpacing(10)
         
+        # Initialize Repository
         self.init_btn = ModernButton(
             "Initialize Repository",
             self,
-            icon=ModernIcons.create_git_init_icon("#FFFFFF"),
-            theme=self.main_window.current_theme
+            icon=AppIcons.get_git_init_icon(),
+            theme=self.main_window.current_theme if self.main_window else None
         )
         self.init_btn.clicked.connect(self.init_repository)
         
+        # Changed Files
+        changes_label = QLabel("Changed Files:")
+        self.changes_list = QTextEdit()
+        self.changes_list.setReadOnly(True)
+        self.changes_list.setPlaceholderText("No changes detected")
+        self.changes_list.setMinimumHeight(100)
+        self.changes_list.setMaximumHeight(150)
+        
+        # Commit Message
+        commit_label = QLabel("Commit Message:")
+        self.commit_msg = QLineEdit()
+        self.commit_msg.setPlaceholderText("Enter commit message...")
+        
+        self.commit_btn = ModernButton(
+            "Commit Changes",
+            self,
+            icon=AppIcons.get_git_commit_icon(),
+            theme=self.main_window.current_theme if self.main_window else None
+        )
+        self.commit_btn.clicked.connect(self.create_commit)
+        
+        # Push to Remote
         self.push_btn = ModernButton(
             "Push to Remote",
             self,
-            icon=ModernIcons.create_git_push_icon("#FFFFFF"),
-            theme=self.main_window.current_theme
+            icon=AppIcons.get_git_push_icon(),
+            theme=self.main_window.current_theme if self.main_window else None
         )
         self.push_btn.clicked.connect(self.push_to_remote)
         
+        # Add widgets to operations layout
         operations_layout.addWidget(self.init_btn)
+        operations_layout.addWidget(changes_label)
+        operations_layout.addWidget(self.changes_list)
+        operations_layout.addWidget(commit_label)
+        operations_layout.addWidget(self.commit_msg)
+        operations_layout.addWidget(self.commit_btn)
         operations_layout.addWidget(self.push_btn)
         
         operations_group.setLayout(operations_layout)
         layout.addWidget(operations_group)
+        
+        # Add stretch at the bottom
+        layout.addStretch()
+        
+        # Set the content widget to scroll area
+        scroll.setWidget(content_widget)
+        main_layout.addWidget(scroll)
+        
+        # Set initial button states
+        self.update_button_states(initial=True)
+        
+        # Style adjustments
+        self.setStyleSheet("""
+            QGroupBox {
+                margin-top: 15px;
+            }
+            QGroupBox::title {
+                subcontrol-origin: margin;
+                left: 5px;
+                padding: 0 2px;
+            }
+            QLabel {
+                min-width: 100px;
+            }
+        """)
     
     def select_project(self):
-        """Varolan bir React projesini seç"""
+        """Select a project directory for Git operations"""
         directory = QFileDialog.getExistingDirectory(
             self,
-            "Select React Project",
+            "Select Project Directory",
             "",
             QFileDialog.ShowDirsOnly
         )
         
         if directory:
-            # package.json kontrolü
-            if not os.path.exists(os.path.join(directory, "package.json")):
-                QMessageBox.warning(
-                    self,
-                    "Invalid Project",
-                    "Selected directory is not a React project!"
+            # Validate if it's a valid Git repository or can be one
+            if os.path.exists(os.path.join(directory, ".git")):
+                self.selected_project = directory
+                self.project_path.setText(directory)
+                self.update_git_status()
+                self.main_window.terminal.append_output(
+                    f"Selected Git project: {directory}",
+                    "INFO"
                 )
-                return
-                
-            self.selected_project = directory
-            self.project_path.setText(directory)
-            self.update_git_status()
+            else:
+                # Check if it's a valid project directory
+                if os.path.exists(os.path.join(directory, "package.json")):
+                    self.selected_project = directory
+                    self.project_path.setText(directory)
+                    self.init_btn.setEnabled(True)
+                    self.main_window.terminal.append_output(
+                        f"Selected project directory: {directory}",
+                        "INFO"
+                    )
+                else:
+                    QMessageBox.warning(
+                        self,
+                        "Invalid Project",
+                        "Selected directory is not a valid React project!"
+                    )
     
     def update_git_status(self):
-        """Git durumunu güncelle"""
+        """Update Git repository status"""
         if not self.selected_project:
+            self.changes_list.setText("No project selected")
             return
             
         try:
             repo = git.Repo(self.selected_project)
             
-            # Değişiklikleri listele
-            changed_files = []
+            # List changes
+            changes = []
             
             # Untracked files
             for item in repo.untracked_files:
-                changed_files.append(f"New: {item}")
+                changes.append(f"New: {item}")
             
             # Modified files
             for item in repo.index.diff(None):
-                changed_files.append(f"Modified: {item.a_path}")
+                changes.append(f"Modified: {item.a_path}")
                 
-            if changed_files:
-                self.changes_list.setText("\n".join(changed_files))
+            if changes:
+                self.changes_list.setText("\n".join(changes))
             else:
                 self.changes_list.setText("No changes detected")
                 
+            # Update button states
+            self.update_button_states()
+            
         except git.InvalidGitRepositoryError:
             self.changes_list.setText("Not a Git repository")
-            self.init_btn.setEnabled(True)
-            self.commit_btn.setEnabled(False)
-            self.push_btn.setEnabled(False)
+            self.update_button_states()
     
     def create_commit(self):
-        """Değişiklikleri commit et"""
-        if not self.selected_project or not self.commit_msg.text():
+        """Create commit from staged changes"""
+        if not hasattr(self, 'selected_project'):
             QMessageBox.warning(
                 self,
                 "Error",
-                "Please select a project and enter a commit message!"
+                "Please select a project directory first."
             )
             return
             
-        try:
-            repo = git.Repo(self.selected_project)
-            
-            # Stage all changes
-            repo.git.add(A=True)
-            
-            # Create commit
-            repo.index.commit(self.commit_msg.text())
-            
-            self.main_window.terminal.append_output(
-                f"Changes committed: {self.commit_msg.text()}",
-                "SUCCESS"
+        if not self.commit_msg.text():
+            QMessageBox.warning(
+                self,
+                "Error",
+                "Please enter a commit message."
             )
+            return
             
-            # Clear commit message and update status
-            self.commit_msg.clear()
-            self.update_git_status()
-            
-        except Exception as e:
-            self.main_window.terminal.append_output(
-                f"Failed to commit changes: {str(e)}",
-                "ERROR"
-            )
-    
-    def update_button_states(self, initial=False):
-        """Butonların durumlarını güncelle"""
-        if initial:
-            self.init_btn.setEnabled(True)
-            self.commit_btn.setEnabled(False)
-            self.push_btn.setEnabled(False)
-        
-    def init_repository(self):
-        """Initialize Git repository"""
         if self.current_worker and self.current_worker.isRunning():
             self.current_worker.stop()
             
-        self.current_worker = GitWorker(self.main_window.project_directory, 'init')
-        self.current_worker.progress.connect(lambda msg: self.main_window.terminal.append_output(msg, "INFO"))
+        self.current_worker = GitWorker(self.selected_project, 'commit')
+        self.current_worker.progress.connect(
+            lambda msg: self.main_window.terminal.append_output(msg, "INFO")
+        )
         self.current_worker.finished.connect(self.handle_git_operation)
         self.current_worker.start()
 
-    '''def create_commit(self):
-        """Create initial commit"""
+    
+    def update_button_states(self, initial=False):
+        """Update Git operation button states"""
+        if initial:
+            self.init_btn.setEnabled(False)
+            self.commit_btn.setEnabled(False)
+            self.push_btn.setEnabled(False)
+            return
+            
+        has_git = os.path.exists(os.path.join(self.selected_project, ".git")) if self.selected_project else False
+        
+        self.init_btn.setEnabled(not has_git and self.selected_project is not None)
+        self.commit_btn.setEnabled(has_git)
+        self.push_btn.setEnabled(has_git)
+        
+    def init_repository(self):
+        """Initialize Git repository"""
+        # First check if we have a valid project path
+        project_path = None
+        
+        # Check for selected existing project
+        if hasattr(self, 'selected_project') and self.selected_project:
+            project_path = self.selected_project
+        # Check main window's project directory
+        elif hasattr(self.main_window, 'project_directory') and self.main_window.project_directory:
+            project_path = os.path.join(
+                self.main_window.project_directory,
+                self.main_window.project_config.name
+            ) if hasattr(self.main_window, 'project_config') else self.main_window.project_directory
+            
+        if not project_path:
+            QMessageBox.warning(
+                self,
+                "Error",
+                "Please select a project directory first."
+            )
+            return
+            
         if self.current_worker and self.current_worker.isRunning():
             self.current_worker.stop()
             
-        self.current_worker = GitWorker(self.main_window.project_directory, 'commit')
-        self.current_worker.progress.connect(lambda msg: self.main_window.terminal.append_output(msg, "INFO"))
+        self.current_worker = GitWorker(project_path, 'init')
+        self.current_worker.progress.connect(
+            lambda msg: self.main_window.terminal.append_output(msg, "INFO")
+        )
         self.current_worker.finished.connect(self.handle_git_operation)
-        self.current_worker.start()'''
+        self.current_worker.start()
 
     def push_to_remote(self):
         """Push changes to remote repository"""
+        if not self.selected_project:
+            QMessageBox.warning(
+                self,
+                "Error",
+                "Please select a project directory first."
+            )
+            return
+            
+        remote_url = self.url_input.text().strip()
+        if not remote_url:
+            QMessageBox.warning(
+                self,
+                "Error",
+                "Please enter remote repository URL"
+            )
+            return
+            
         if self.current_worker and self.current_worker.isRunning():
             self.current_worker.stop()
             
-        remote_url = self.url_input.text()
-        branch = self.branch_combo.currentText()
-        
-        if not remote_url:
-            QMessageBox.warning(self, "Error", "Please enter remote repository URL")
-            return
-            
         self.current_worker = GitWorker(
-            self.main_window.project_directory,
+            self.selected_project,
             'push',
             remote_url=remote_url,
-            branch=branch
+            branch=self.branch_combo.currentText()
         )
-        self.current_worker.progress.connect(lambda msg: self.main_window.terminal.append_output(msg, "INFO"))
+        self.current_worker.progress.connect(
+            lambda msg: self.main_window.terminal.append_output(msg, "INFO")
+        )
         self.current_worker.finished.connect(self.handle_git_operation)
         self.current_worker.start()
 
@@ -1639,28 +1751,28 @@ class TerminalOutput(QWidget):
         
         # Modern save ikonu
         save_action = QAction(self)
-        save_action.setIcon(ModernIcons.create_save_icon(self.parent().current_theme.primary))
+        save_action.setIcon(AppIcons.get_save_icon())
         save_action.setToolTip("Save Output")
         save_action.triggered.connect(self.save_output)
         toolbar.addAction(save_action)
         
         # Modern search ikonu
         search_action = QAction(self)
-        search_action.setIcon(ModernIcons.create_search_icon(self.parent().current_theme.primary))
+        search_action.setIcon(AppIcons.get_search_icon())
         search_action.setToolTip("Search")
         search_action.triggered.connect(self.show_search_dialog)
         toolbar.addAction(search_action)
         
         # Modern clear ikonu
         clear_action = QAction(self)
-        clear_action.setIcon(ModernIcons.create_trash_icon(self.parent().current_theme.primary))
+        clear_action.setIcon(AppIcons.get_trash_icon())
         clear_action.setToolTip("Clear")
         clear_action.triggered.connect(self.clear_output)
         toolbar.addAction(clear_action)
         
         # Modern expand ikonu
         expand_action = QAction(self)
-        expand_action.setIcon(ModernIcons.create_expand_icon(self.parent().current_theme.primary))
+        expand_action.setIcon(AppIcons.get_expand_icon())
         expand_action.setToolTip("Expand Terminal")
         expand_action.triggered.connect(self.show_expanded_view)
         toolbar.addAction(expand_action)
@@ -1876,18 +1988,18 @@ class ModernReactAutomator(QMainWindow):
     def setup_modern_icons(self):
         """Modern ikonları ayarla"""
         # Uygulama ikonu
-        self.setWindowIcon(ModernIcons.create_app_icon())
+        self.setWindowIcon(AppIcon.create_app_icon())
         
         # Run kontrolü için modern ikonlar
-        self.run_btn.setIcon(ModernIcons.create_play_icon(self.current_theme.primary))
-        self.browser_btn.setIcon(ModernIcons.create_browser_icon(self.current_theme.primary))
+        self.run_btn.setIcon(AppIcons.get_play_icon())
+        self.browser_btn.setIcon(AppIcons.get_browser_icon())
         
         # Play/Stop toggle için
         def update_run_icon(is_running: bool):
             if is_running:
-                self.run_btn.setIcon(ModernIcons.create_stop_icon(self.current_theme.error))
+                self.run_btn.setIcon(AppIcons.get_stop_icon())
             else:
-                self.run_btn.setIcon(ModernIcons.create_play_icon(self.current_theme.primary))
+                self.run_btn.setIcon(AppIcons.get_play_icon())
         
         # Run butonu tıklandığında ikonu güncelle
         self.run_btn.clicked.connect(lambda: update_run_icon(not hasattr(self, 'project_runner') or not self.project_runner.running))
@@ -2024,13 +2136,13 @@ class ModernReactAutomator(QMainWindow):
         file_menu = menubar.addMenu('&File')
         
         new_action = QAction('&New Project', self)
-        new_action.setIcon(ModernIcons.create_new_file_icon(self.current_theme.primary))
+        new_action.setIcon(AppIcons.get_add_icon())
         new_action.setShortcut('Ctrl+N')
         new_action.triggered.connect(self.create_project)
         file_menu.addAction(new_action)
         
         save_action = QAction('&Save Terminal Output', self)
-        save_action.setIcon(ModernIcons.create_save_icon(self.current_theme.primary))
+        save_action.setIcon(AppIcons.get_save_icon())
         save_action.setShortcut('Ctrl+S')
         save_action.triggered.connect(self.terminal.save_output)
         file_menu.addAction(save_action)
@@ -2038,7 +2150,7 @@ class ModernReactAutomator(QMainWindow):
         file_menu.addSeparator()
         
         exit_action = QAction('&Exit', self)
-        exit_action.setIcon(ModernIcons.create_close_icon(self.current_theme.text_secondary))
+        exit_action.setIcon(AppIcons.get_exit_icon())
         exit_action.setShortcut('Ctrl+Q')
         exit_action.triggered.connect(self.close)
         file_menu.addAction(exit_action)
@@ -2048,6 +2160,7 @@ class ModernReactAutomator(QMainWindow):
         
         clear_action = QAction('&Clear Terminal', self)
         clear_action.setShortcut('Ctrl+L')
+        clear_action.setIcon(AppIcons.get_clean_icon())
         clear_action.triggered.connect(self.terminal.clear_output)
         edit_menu.addAction(clear_action)
         
@@ -2055,13 +2168,18 @@ class ModernReactAutomator(QMainWindow):
         view_menu = menubar.addMenu('&View')
         
         theme_menu = view_menu.addMenu('&Theme')
+        theme_menu.setIcon(AppIcons.get_theme_icon())
         
         light_action = QAction('&Light', self)
         light_action.triggered.connect(lambda: self.change_theme(AppTheme.light()))
+        light_action.setIcon(AppIcons.get_light_icon())
+
         theme_menu.addAction(light_action)
         
         dark_action = QAction('&Dark', self)
         dark_action.triggered.connect(lambda: self.change_theme(AppTheme.dark()))
+        dark_action.setIcon(AppIcons.get_dark_icon())
+
         theme_menu.addAction(dark_action)
         
         # Help menu
@@ -2069,6 +2187,7 @@ class ModernReactAutomator(QMainWindow):
         
         about_action = QAction('&About', self)
         about_action.triggered.connect(self.show_about_dialog)
+        about_action.setIcon(AppIcons.get_about_icon())
         help_menu.addAction(about_action)
         
     def setup_status_bar(self):
@@ -2247,7 +2366,7 @@ class ModernReactAutomator(QMainWindow):
             "Create Project",
             self,
             primary=True,
-            icon=ModernIcons.create_rocket_icon(color="white")
+            icon=AppIcons.get_terminal_icon()
         )
         create_btn.clicked.connect(self.create_project)
         create_btn.setMinimumWidth(150)
@@ -2255,7 +2374,7 @@ class ModernReactAutomator(QMainWindow):
         clear_btn = ModernButton(
             "Clear Form",
             self,
-            icon=ModernIcons.create_refresh_icon("#FFFFFF")
+            icon=AppIcons.get_refresh_icon()
         )
         clear_btn.clicked.connect(self.clear_form)
         clear_btn.setMinimumWidth(150)
@@ -2271,7 +2390,7 @@ class ModernReactAutomator(QMainWindow):
         select_dir_btn = ModernButton(
             "Browse",
             self,
-            icon=self.style().standardIcon(QStyle.SP_DirIcon)
+            icon=AppIcons.get_folder_icon()
         )
         select_dir_btn.clicked.connect(self.select_directory)
 
@@ -2285,7 +2404,7 @@ class ModernReactAutomator(QMainWindow):
         select_existing_btn = ModernButton(
             "Browse",
             self,
-            icon=ModernIcons.create_folder_icon(self.current_theme.primary)
+            icon=AppIcons.get_folder_icon()
         )
         select_existing_btn.clicked.connect(self.select_existing_project)
         
@@ -2592,7 +2711,7 @@ class ModernReactAutomator(QMainWindow):
             self,
             "About",
             f"{APP_NAME} v{APP_VERSION}\n\n"
-            "A professional-grade tool for automating React project creation\n"
+            "A professional-grade tool for automating React project creation "
             "with modern best practices and industry standards."
             "\n\nAuthor: Melih Can Demir"
             "\nLICENSE: MIT"
@@ -2609,7 +2728,7 @@ class ModernReactAutomator(QMainWindow):
             "Run Project",
             self,
             primary=True,
-            icon=self.style().standardIcon(QStyle.SP_MediaPlay)
+            icon=AppIcons.get_play_icon()
         )
         self.run_btn.clicked.connect(self.toggle_project_run)
         self.run_btn.setEnabled(False)
@@ -2618,7 +2737,7 @@ class ModernReactAutomator(QMainWindow):
         self.browser_btn = ModernButton(
             "Open in Browser",
             self,
-            icon=self.style().standardIcon(QStyle.SP_ComputerIcon)
+            icon=AppIcons.get_browser_icon()
         )
         self.browser_btn.clicked.connect(lambda: QDesktopServices.openUrl(QUrl("http://localhost:5173")))
         self.browser_btn.setEnabled(False)
@@ -2639,34 +2758,35 @@ class ModernReactAutomator(QMainWindow):
                 
             project_path = os.path.join(self.project_directory, self.project_config.name)
             if not os.path.exists(project_path):
-                QMessageBox.warning(self, "Error", "Project directory not found!")
-                return
+                project_path = self.project_directory  # Mevcut proje dizinini kullan
                 
             # Runner'ı başlat
             self.project_runner = ProjectRunner(project_path, self.npm_path)
             self.project_runner.output_ready.connect(self.terminal.append_output)
             self.project_runner.error_occurred.connect(self.handle_run_error)
+            self.project_runner.running_changed.connect(self.update_run_button_state)  # Yeni bağlantı
             self.project_runner.start()
-            
-            # UI güncelle
-            self.run_btn.setText("Stop Project")
-            self.run_btn.setIcon(self.style().standardIcon(QStyle.SP_MediaStop))
-            self.browser_btn.setEnabled(True)
             
         else:
             # Projeyi durdur
             self.project_runner.stop()
-            
-            # UI güncelle
+    
+    def update_run_button_state(self, is_running: bool):
+        """Update run button state based on project running status"""
+        if is_running:
+            self.run_btn.setText("Stop Project")
+            self.run_btn.setIcon(AppIcons.get_stop_icon())
+            self.browser_btn.setEnabled(True)
+        else:
             self.run_btn.setText("Run Project")
-            self.run_btn.setIcon(self.style().standardIcon(QStyle.SP_MediaPlay))
+            self.run_btn.setIcon(AppIcons.get_play_icon())
             self.browser_btn.setEnabled(False)
 
     def handle_run_error(self, error_message: str):
         """Handle project run errors"""
         QMessageBox.critical(self, "Error", f"Failed to run project: {error_message}")
         self.run_btn.setText("Run Project")
-        self.run_btn.setIcon(self.style().standardIcon(QStyle.SP_MediaPlay))
+        self.run_btn.setIcon(AppIcons.get_play_icon())
         self.browser_btn.setEnabled(False)
 
     def handle_completion(self, success: bool, message: str):
@@ -2686,67 +2806,139 @@ class ProjectRunner(QThread):
     """Thread for running React projects"""
     output_ready = pyqtSignal(str, str)
     error_occurred = pyqtSignal(str)
+    running_changed = pyqtSignal(bool)
     
     def __init__(self, project_path: str, npm_path: str):
         super().__init__()
         self.project_path = project_path
         self.npm_path = npm_path
+        # node_modules/.bin dizinindeki vite yolunu belirle
+        self.vite_path = os.path.join(project_path, "node_modules", ".bin", "vite")
+        if os.name == "nt":  # Windows için .cmd uzantısını ekle
+            self.vite_path += ".cmd"
         self.process = None
         self.running = False
-        
+    
+    @property
+    def running(self):
+        return self._running
+    
+    @running.setter
+    def running(self, value):
+        self._running = value
+        self.running_changed.emit(value)
+    
     def run(self):
         try:
             self.running = True
             os.chdir(self.project_path)
             
-            # npm install kontrolü
-            self.output_ready.emit("Checking dependencies...", "INFO")
+            # node_modules kontrolü
             if not os.path.exists(os.path.join(self.project_path, "node_modules")):
                 self.output_ready.emit("Installing dependencies...", "INFO")
-                install_process = QProcess()
-                install_process.setProcessChannelMode(QProcess.MergedChannels)
-                install_process.start(self.npm_path, ["install"])
-                install_process.waitForFinished()
-                
-                if install_process.exitCode() != 0:
+                if not self.install_dependencies():
                     raise Exception("Failed to install dependencies")
             
+            # Vite kontrolü ve yükleme
+            if not os.path.exists(self.vite_path):
+                self.output_ready.emit("Installing Vite...", "INFO")
+                if not self.install_vite():
+                    raise Exception("Failed to install Vite")
+            
             # Projeyi başlat
+            self.output_ready.emit("Starting development server...", "INFO")
             self.process = QProcess()
             self.process.setProcessChannelMode(QProcess.MergedChannels)
-
-            def clean_ansi_codes(text: str) -> str:
-                """ANSI escape kodlarını temizle"""
-                ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
-                return ansi_escape.sub('', text)
+            self.process.readyReadStandardOutput.connect(self.handle_output)
             
-            # Çıktıyı terminal'e yönlendir
-            def handle_output():
-                data = self.process.readAll().data().decode()
-                cleaned_data = clean_ansi_codes(data)
-                self.output_ready.emit(cleaned_data, "INFO")
-                
-            self.process.readyReadStandardOutput.connect(handle_output)
-            self.output_ready.emit("Starting development server...", "INFO")
+            # Windows'ta npm run dev, diğer sistemlerde doğrudan vite
+            if os.name == "nt":
+                self.process.start(self.npm_path, ["run", "dev"])
+            else:
+                self.process.start(self.vite_path)
             
-            # npm start veya npm run dev komutu
-            self.process.start(self.npm_path, ["run", "dev"])
             self.process.waitForFinished(-1)
             
         except Exception as e:
             self.error_occurred.emit(str(e))
         finally:
             self.running = False
-            
+    
+    def install_dependencies(self) -> bool:
+        """Install project dependencies"""
+        process = QProcess()
+        process.setProcessChannelMode(QProcess.MergedChannels)
+        process.readyReadStandardOutput.connect(
+            lambda: self.output_ready.emit(
+                process.readAll().data().decode(), "INFO"
+            )
+        )
+        
+        process.start(self.npm_path, ["install"])
+        process.waitForFinished(-1)
+        return process.exitCode() == 0
+    
+    def install_vite(self) -> bool:
+        """Install Vite dependency"""
+        process = QProcess()
+        process.setProcessChannelMode(QProcess.MergedChannels)
+        process.readyReadStandardOutput.connect(
+            lambda: self.output_ready.emit(
+                process.readAll().data().decode(), "INFO"
+            )
+        )
+        
+        process.start(self.npm_path, ["install", "--save-dev", "vite"])
+        process.waitForFinished(-1)
+        return process.exitCode() == 0
+    
+    def handle_output(self):
+        """Handle process output"""
+        data = self.process.readAll().data().decode()
+        cleaned_data = self.clean_ansi_codes(data)
+        self.output_ready.emit(cleaned_data, "INFO")
+    
     def stop(self):
         """Stop running project"""
         if self.process and self.running:
-            self.process.kill()
+            if os.name == "nt":
+                subprocess.run(["taskkill", "/F", "/T", "/PID", str(self.process.processId())], 
+                             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            else:
+                self.process.kill()
+            
             self.running = False
             self.output_ready.emit("Development server stopped.", "INFO")
     
-
-
+    @staticmethod
+    def clean_ansi_codes(text: str) -> str:
+        """Clean ANSI escape codes from text"""
+        ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
+        return ansi_escape.sub('', text)
+    
+    def check_package_json(self):
+        """Check and update package.json if needed"""
+        try:
+            with open("package.json", "r+") as f:
+                data = json.load(f)
+                updated = False
+                
+                if "scripts" not in data:
+                    data["scripts"] = {}
+                    updated = True
+                
+                if "dev" not in data["scripts"]:
+                    data["scripts"]["dev"] = "vite"
+                    updated = True
+                
+                if updated:
+                    f.seek(0)
+                    json.dump(data, f, indent=2)
+                    f.truncate()
+                    
+        except Exception as e:
+            self.error_occurred.emit(f"Failed to update package.json: {str(e)}")
+    
 def main():
     """Application entry point"""
     app = QApplication(sys.argv)

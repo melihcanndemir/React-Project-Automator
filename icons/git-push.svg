@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <!-- Gölge efekti için gradient -->
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#4ade80;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#22c55e;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Ana çember -->
+  <circle 
+    cx="12" 
+    cy="12" 
+    r="11" 
+    fill="url(#gradient)"
+    stroke="none"
+  />
+  
+  <!-- Ok başlığı -->
+  <path 
+    d="M12 6l4 4h-2.5v6h-3v-6H8z" 
+    fill="white"
+  />
+  
+  <!-- Remote repository çizgisi -->
+  <path
+    d="M7 18h10"
+    stroke="white"
+    stroke-width="2.5"
+    stroke-linecap="round"
+  />
+</svg>
