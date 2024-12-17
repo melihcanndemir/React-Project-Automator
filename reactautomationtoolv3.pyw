@@ -1836,11 +1836,27 @@ class TerminalOutput(QWidget):
         
         if filename:
             try:
-                with open(filename, 'w') as f:
-                    f.write(self.output.toPlainText())
+                content = self.output.toPlainText()
+                print(f"Debug - Content length: {len(content)}")  # İçerik uzunluğu
+                
+                # Dosya izinlerini kontrol et
+                if not os.access(os.path.dirname(filename), os.W_OK):
+                    self.logger.error("No write permission for selected location")
+                    return
+                    
+                with open(filename, 'w', encoding='utf-8') as f:  # encoding ekledik
+                    f.write(content)
+                    
+                # Dosya içeriğini kontrol et
+                with open(filename, 'r', encoding='utf-8') as f:
+                    saved_content = f.read()
+                    print(f"Debug - Saved content length: {len(saved_content)}")
+                    
                 self.logger.info(f"Output saved to {filename}")
+                
             except Exception as e:
                 self.logger.error(f"Failed to save output: {str(e)}")
+                print(f"Debug - Exception details: {type(e).__name__}: {str(e)}")
                 
     def show_search_dialog(self):
         dialog = SearchDialog(self)
