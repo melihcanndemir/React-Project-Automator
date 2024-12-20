@@ -3,10 +3,14 @@
 block_cipher = None
 
 a = Analysis(
-    ['reactautomationtoolv3.pyw'],
+    ['reactautomationtoolv3.pyw'],  # Your main script
     pathex=[],
     binaries=[],
-    datas=[('app_icon.py', '.'), ('app_icons.py', '.'), ('icons/*', 'icons')],
+    datas=[
+        ('app_icon.py', '.'),        # Include app_icon.py
+        ('app_icons.py', '.'),       # Include app_icons.py
+        ('icons/*', 'icons')         # Include all files in the icons directory
+    ],
     hiddenimports=[],
     hookspath=[],
     runtime_hooks=[],
@@ -32,7 +36,7 @@ exe = EXE(
     upx_exclude=[],
     runtime_tmpdir=None,
     console=False,
-    icon='react.ico'
+    icon='react.ico'  # Specify the correct path to your icon file here
 )
 
 coll = COLLECT(
