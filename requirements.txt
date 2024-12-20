@@ -1,5 +1,4 @@
-# requirements.txt dosyası
-PyQt5==5.15.9
-PyInstaller==6.3.0
-gitpython==3.1.40
-PyQt5-Charts==5.15.6
+PyQt5
+PyInstaller
+gitpython
+PyQt5-Charts
