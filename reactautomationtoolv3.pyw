@@ -5,7 +5,7 @@ A professional-grade desktop application for automating React project creation
 with advanced features and industry-standard practices.
 
 Author: Melih Can Demir, Claude AI, ChatGPT and Other Pre-Trained Models
-Version: 3.2.3
+Version: 3.2.6
 License: MIT
 """
 
@@ -46,7 +46,7 @@ from appicons import AppIcons
 
 # Application Constants
 APP_NAME = "Modern React Project Automator"
-APP_VERSION = "3.2.3"
+APP_VERSION = "3.2.6"
 ORGANIZATION_NAME = "ReactAutomator"
 SETTINGS_FILE = "config.json"
 
