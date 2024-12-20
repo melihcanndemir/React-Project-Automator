@@ -5,7 +5,7 @@ A professional-grade desktop application for automating React project creation
 with advanced features and industry-standard practices.
 
 Author: Melih Can Demir, Claude AI, ChatGPT and Other Pre-Trained Models
-Version: 3.2.1
+Version: 3.2.3
 License: MIT
 """
 
@@ -46,7 +46,7 @@ from appicons import AppIcons
 
 # Application Constants
 APP_NAME = "Modern React Project Automator"
-APP_VERSION = "3.2.1"
+APP_VERSION = "3.2.3"
 ORGANIZATION_NAME = "ReactAutomator"
 SETTINGS_FILE = "config.json"
 
@@ -684,74 +684,111 @@ class GitIntegration(QWidget):
             QMessageBox.critical(self, "Error", f"Git operation failed: {message}")
 
 class ProjectAnalytics(QWidget):
-    """Widget for project analytics and visualization"""
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.main_window = parent
         self.setup_ui()
-        
+
     def setup_ui(self):
+        """Setup user interface"""
         layout = QVBoxLayout(self)
-        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        
+        # Chart view area
+        charts_container = QWidget()
+        charts_layout = QHBoxLayout(charts_container)
         
         # Dependencies chart
         deps_chart = QChart()
-        deps_series = QPieSeries()
+        deps_chart.setAnimationOptions(QChart.SeriesAnimations)
+        deps_chart.setTitle("Dependencies Distribution")
         
+        deps_series = QPieSeries()
         deps_series.append("Runtime", 15)
         deps_series.append("Development", 8)
         deps_series.append("Peer", 3)
         
         deps_chart.addSeries(deps_series)
-        deps_chart.setTitle("Dependencies Distribution")
-        
         deps_view = QChartView(deps_chart)
         deps_view.setRenderHint(QPainter.Antialiasing)
+        charts_layout.addWidget(deps_view)
         
         # Bundle size chart
         bundle_chart = QChart()
-        bundle_series = QBarSeries()
+        bundle_chart.setAnimationOptions(QChart.SeriesAnimations)
+        bundle_chart.setTitle("Bundle Size Analysis")
         
+        bundle_series = QBarSeries()
         bundle_set = QBarSet("Size (KB)")
         bundle_set.append([120, 45, 25, 15])
         bundle_series.append(bundle_set)
         
         bundle_chart.addSeries(bundle_series)
-        bundle_chart.setTitle("Bundle Size Analysis")
-        
         bundle_view = QChartView(bundle_chart)
         bundle_view.setRenderHint(QPainter.Antialiasing)
-        
-        # Add charts to layout
-        charts_layout = QHBoxLayout()
-        charts_layout.addWidget(deps_view)
         charts_layout.addWidget(bundle_view)
-        layout.addLayout(charts_layout)
         
-        # Project stats
+        layout.addWidget(charts_container)
+        
+        # Project statistics
         stats_group = QGroupBox("Project Statistics")
         stats_layout = QGridLayout()
         
         stats = [
-            ("Total Dependencies", "26"),
-            ("Bundle Size", "205 KB"),
-            ("Build Time", "2.3s"),
-            ("Test Coverage", "87%"),
-            ("Last Updated", "2 hours ago"),
-            ("Contributors", "3")
+            ("Total Dependencies:", "26"),
+            ("Build Time:", "2.3s"),
+            ("Last Updated:", "2 hours ago"),
+            ("Bundle Size:", "205 KB"),
+            ("Test Coverage:", "87%"),
+            ("Contributors:", "3")
         ]
         
         row = 0
         col = 0
         for label, value in stats:
-            stats_layout.addWidget(QLabel(f"{label}:"), row, col)
-            stats_layout.addWidget(QLabel(value), row, col + 1)
+            label_widget = QLabel(label)
+            value_widget = QLabel(value)
+            stats_layout.addWidget(label_widget, row, col)
+            stats_layout.addWidget(value_widget, row, col + 1)
             col += 2
             if col >= 4:
                 col = 0
                 row += 1
-                
+        
         stats_group.setLayout(stats_layout)
         layout.addWidget(stats_group)
+
+        # Apply theme
+        if hasattr(self.main_window, 'current_theme'):
+            theme = self.main_window.current_theme
+            self.setStyleSheet(f"""
+                QWidget {{
+                    background-color: {theme.background};
+                    color: {theme.text_primary};
+                }}
+                QGroupBox {{
+                    background-color: {theme.surface};
+                    border: 1px solid {theme.border};
+                    border-radius: 8px;
+                    margin-top: 1em;
+                    padding: 15px;
+                }}
+                QGroupBox::title {{
+                    color: {theme.text_primary};
+                }}
+                QLabel {{
+                    color: {theme.text_primary};
+                }}
+                QChart {{
+                    background-color: {theme.surface};
+                }}
+                QChartView {{
+                    background-color: {theme.surface};
+                }}
+            """)
+
+            # Apply chart themes
+            deps_chart.setTheme(QChart.ChartThemeDark if theme.name == "dark" else QChart.ChartThemeLight)
+            bundle_chart.setTheme(QChart.ChartThemeDark if theme.name == "dark" else QChart.ChartThemeLight)
 
 class ProjectWorker(QThread):
     """Worker thread for project creation tasks"""
@@ -2609,49 +2646,146 @@ class ModernReactAutomator(QMainWindow):
         
     def apply_theme(self):
         """Apply current theme to application"""
+        # Ana uygulama stilleri
         self.setStyleSheet(f"""
             QMainWindow {{
                 background-color: {self.current_theme.background};
             }}
+            
+            QScrollArea {{
+                background-color: {self.current_theme.background};
+                border: none;
+            }}
+            
+            QScrollArea > QWidget > QWidget {{
+                background-color: {self.current_theme.background};
+            }}
+            
+            QScrollBar {{
+                background-color: {self.current_theme.surface};
+                border-radius: 4px;
+            }}
+            
+            QScrollBar:vertical {{
+                width: 12px;
+                margin: 0px;
+            }}
+            
+            QScrollBar:horizontal {{
+                height: 12px;
+                margin: 0px;
+            }}
+            
+            QScrollBar::handle {{
+                background-color: {self.current_theme.secondary};
+                border-radius: 4px;
+                min-height: 20px;
+            }}
+            
+            QScrollBar::handle:hover {{
+                background-color: {self.current_theme.primary};
+            }}
+            
+            QScrollBar::add-line, QScrollBar::sub-line {{
+                height: 0px;
+                width: 0px;
+            }}
+            
             QLabel {{
                 color: {self.current_theme.text_primary};
                 padding: 5px;
             }}
+            
             QGroupBox {{
                 background-color: {self.current_theme.surface};
                 border: 1px solid {self.current_theme.border};
                 border-radius: 6px;
                 margin-top: 12px;
                 padding: 10px;
-            }}
-            QGroupBox::title {{
                 color: {self.current_theme.text_primary};
-                subcontrol-origin: margin;
-                left: 10px;
-                padding: 0 3px;
             }}
-            QLineEdit, QComboBox {{
+            
+            QLineEdit, QComboBox, QTextEdit {{
                 background-color: {self.current_theme.surface};
                 color: {self.current_theme.text_primary};
                 border: 1px solid {self.current_theme.border};
                 border-radius: 4px;
                 padding: 8px;
-                min-height: 20px;
+                selection-background-color: {self.current_theme.primary};
+                selection-color: white;
             }}
-            QCheckBox {{
+            
+            QWidget[objectName="scrollAreaContent"] {{
+                background-color: {self.current_theme.background};
                 color: {self.current_theme.text_primary};
-                spacing: 8px;
             }}
-            QPushButton {{
+
+            QCheckBox {{
+            color: {self.current_theme.text_primary};
+            spacing: 5px;
+            }}
+
+            QCheckBox::indicator {{
+                width: 18px;
+                height: 18px;
+                border: 2px solid {self.current_theme.text_primary};
+                border-radius: 3px;
+            }}
+
+            QCheckBox::indicator:checked {{
                 background-color: {self.current_theme.primary};
-                color: white;
-                border: none;
-                border-radius: 4px;
-                padding: 8px 16px;
-                min-height: 20px;
+                border-color: {self.current_theme.primary};
             }}
-            QPushButton:hover {{
-                background-color: {self.current_theme.accent};
+
+            QCheckBox::indicator:unchecked {{
+                background-color: transparent;
+            }}
+
+            QComboBox {{
+            color: {self.current_theme.text_primary};
+            background-color: {self.current_theme.surface};
+            border: 1px solid {self.current_theme.border};
+            border-radius: 4px;
+            padding: 5px 10px;
+            min-width: 6em;
+            }}
+        
+            QComboBox:hover {{
+                border-color: {self.current_theme.primary};
+            }}
+            
+            QComboBox:focus {{
+                border-color: {self.current_theme.primary};
+            }}
+            
+            QComboBox::drop-down {{
+                border: none;
+                width: 20px;
+                padding-right: 5px;
+            }}
+            
+            QComboBox::down-arrow {{
+                image: url(:/icons/down-arrow.svg);
+                width: 12px;
+                height: 12px;
+            }}
+            
+            QComboBox QAbstractItemView {{
+                color: {self.current_theme.text_primary};
+                background-color: {self.current_theme.surface};
+                border: 1px solid {self.current_theme.border};
+                selection-background-color: {self.current_theme.primary};
+                selection-color: white;
+                outline: 0px;
+            }}
+            
+            QComboBox QAbstractItemView::item {{
+                min-height: 25px;
+                padding: 5px;
+            }}
+            
+            QComboBox QAbstractItemView::item:hover {{
+                background-color: {self.current_theme.border};
             }}
         """)
         
@@ -2737,16 +2871,65 @@ class ModernReactAutomator(QMainWindow):
             delattr(self, 'project_directory')
         
     def show_about_dialog(self):
-        """Show about dialog"""
-        QMessageBox.about(
-            self,
-            "About",
-            f"{APP_NAME} v{APP_VERSION}\n\n"
-            "A professional-grade tool for automating React project creation "
-            "with modern best practices and industry standards."
-            "\n\nAuthor: Melih Can Demir"
-            "\nLICENSE: MIT"
-        )
+        """Show themed about dialog"""
+        icon_size = 128
+        app_icon = AppIcon.create_app_icon().pixmap(icon_size, icon_size)
+        
+        about = ThemedMessageBox(self.current_theme, self)
+        about.setWindowTitle("About")
+        about.setIconPixmap(app_icon)
+        
+        about_text = f"""
+        <div style='margin-left: 20px; margin-right: 20px;'>
+            <div style='display: flex; align-items: center; margin-bottom: 15px;'>
+                <h2 style='font-size: 24px; margin: 0; color: {self.current_theme.text_primary};'>
+                    {APP_NAME}
+                </h2>
+                <span style='font-size: 16px; margin-left: 10px; color: {self.current_theme.text_secondary};'>
+                    v{APP_VERSION}
+                </span>
+            </div>
+            
+            <p style='font-size: 14px; line-height: 1.6; color: {self.current_theme.text_primary}; margin: 15px 0;'>
+                A professional-grade tool for automating React project creation 
+                with modern best practices and industry standards.
+            </p>
+            
+            <div style='margin-top: 20px; border-top: 1px solid {self.current_theme.border}; padding-top: 15px;'>
+                <div style='display: flex; justify-content: space-between; margin-bottom: 8px;'>
+                    <span style='color: {self.current_theme.text_secondary};'>Author</span>
+                    <span style='color: {self.current_theme.text_primary};'>Melih Can Demir</span>
+                </div>
+                <div style='display: flex; justify-content: space-between;'>
+                    <span style='color: {self.current_theme.text_secondary};'>License</span>
+                    <span style='color: {self.current_theme.text_primary};'>MIT</span>
+                </div>
+            </div>
+        </div>
+        """
+        
+        about.setText(about_text)
+        about.setTextFormat(Qt.RichText)
+        about.setStandardButtons(QMessageBox.Ok)
+        
+        ok_button = about.button(QMessageBox.Ok)
+        if ok_button:
+            ok_button.setStyleSheet(f"""
+                QPushButton {{
+                    background-color: {self.current_theme.primary};
+                    color: white;
+                    border: none;
+                    border-radius: 4px;
+                    padding: 8px 24px;
+                    min-width: 100px;
+                    font-weight: bold;
+                }}
+                QPushButton:hover {{
+                    background-color: {self.current_theme.accent};
+                }}
+            """)
+        
+        about.exec_()
 
     def setup_run_controls(self):
         """Setup project run controls"""
@@ -2969,6 +3152,52 @@ class ProjectRunner(QThread):
                     
         except Exception as e:
             self.error_occurred.emit(f"Failed to update package.json: {str(e)}")
+    
+
+class ThemedMessageBox(QMessageBox):
+    def __init__(self, theme: AppTheme, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.theme = theme
+        self.setup_ui()
+
+    def setup_ui(self):
+        self.setStyleSheet(f"""
+            QMessageBox {{
+                background-color: {self.theme.background};
+                color: {self.theme.text_primary};
+                border: 1px solid {self.theme.border};
+                border-radius: 12px;
+                min-width: 480px;
+            }}
+            
+            QMessageBox QLabel {{
+                color: {self.theme.text_primary};
+                font-size: 14px;
+                border-radius: 8px;
+            }}
+            
+            QMessageBox QPushButton {{
+                background-color: {self.theme.primary};
+                color: white;
+                border: none;
+                border-radius: 4px;
+                padding: 8px 24px;
+                min-width: 100px;
+                font-weight: bold;
+            }}
+            
+            QMessageBox QPushButton:hover {{
+                background-color: {self.theme.accent};
+            }}
+        """)
+
+        # İçerik hizalama
+        for label in self.findChildren(QLabel):
+            label.setAlignment(Qt.AlignLeft)
+            label.setContentsMargins(5, 5, 5, 5)
+
+
+
     
 def main():
     """Application entry point"""
