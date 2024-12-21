@@ -36,7 +36,6 @@ exe = EXE(
     runtime_tmpdir=None,
     console=False,
     icon='react.ico'
-    onefile=True
 )
 
 coll = COLLECT(
