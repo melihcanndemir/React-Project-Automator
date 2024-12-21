@@ -48,7 +48,7 @@ jobs:
 
     - name: Package with PyInstaller
       run: |
-        pyinstaller reactautomationtoolv3s.spec
+        pyinstaller reactautomationtoolv3.spec
 
     - name: Create GitHub Release
       id: create_release
@@ -67,6 +67,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: dist/reactautomationtoolv3.exe  # Derlenen dosya
-        asset_name: reactautomationtoolv3.exe  # Release'teki dosya adı
+        asset_path: dist/reactautomationtoolv3.exe  # Compiled file
+        asset_name: reactautomationtoolv3.exe  # File name in Release
         asset_content_type: application/octet-stream
