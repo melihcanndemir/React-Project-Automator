@@ -42,7 +42,7 @@ from PyQt5.QtCore import (
 from PyQt5.QtChart import QChart, QChartView, QPieSeries, QBarSeries, QBarSet
 
 from app_icon import AppIcon
-from appicons import AppIcons
+from app_icons import AppIcons
 
 # Application Constants
 APP_NAME = "Modern React Project Automator"
