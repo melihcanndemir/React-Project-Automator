@@ -12,11 +12,12 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
-
+    
     - name: Clean previous builds
       run: |
-        rmdir /s /q dist
-        rmdir /s /q build
+          cmd.exe /c "rmdir /s /q dist"
+          cmd.exe /c "rmdir /s /q build"
+
 
     - name: Set up Python
       uses: actions/setup-python@v2
