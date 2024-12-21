@@ -56,10 +56,10 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: v3.2.6  # Versiyon numarasını buradan ayarlayın
+        tag_name: v3.2.6  # Set version number here
         release_name: "React Automation Tool v3.2.6"
-        draft: false  # Taslak olarak ayarlanabilir (true) veya yayınlanabilir (false)
-        prerelease: true  # Ön sürümse true yapabilirsiniz
+        draft: false  # Can be set as draft (true) or published (false)
+        prerelease: true  # If it is a pre-release version, you can set it to true
 
     - name: Upload Release Asset
       uses: actions/upload-release-asset@v1
