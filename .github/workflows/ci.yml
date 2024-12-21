@@ -28,6 +28,13 @@ jobs:
       with:
         python-version: '3.8'
 
+    - name: Run Terminal Commands
+      run: |
+       echo "Checking Python Path"
+       where python
+       python --version
+
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
