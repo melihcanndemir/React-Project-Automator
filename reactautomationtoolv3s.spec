@@ -5,7 +5,7 @@ a = Analysis(
     ['reactautomationtoolv3.pyw'],
     pathex=['.'],
     binaries=[
-    ('C:\hostedtoolcache\windows\Python\3.8.10\x64\python38.dll', '.'),
+    ('C:\\hostedtoolcache\\windows\\Python\\3.8.10\\x64\\python38.dll', '.'),
     ],
     datas=[
         ('app_icon.py', '.'),
