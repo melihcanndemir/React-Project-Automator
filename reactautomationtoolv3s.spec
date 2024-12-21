@@ -1,5 +1,4 @@
 # -*- mode: python ; coding: utf-8 -*-
-
 block_cipher = None
 
 a = Analysis(
@@ -22,13 +21,9 @@ a = Analysis(
 
 pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 
-
 exe = EXE(
     pyz,
-    a.scripts,   # Burada a.datas veya a.binaries eklemeyin
-    # a.binaries,
-    # a.zipfiles,
-    # a.datas,
+    a.scripts,
     [],
     name='reactautomationtoolv3',
     debug=False,
