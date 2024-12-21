@@ -7,16 +7,16 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
 
     - name: Clean previous builds
-      run: | 
-        rm -rf dist build
-
+      run: |
+        rmdir /s /q dist
+        rmdir /s /q build
 
     - name: Set up Python
       uses: actions/setup-python@v2
@@ -37,4 +37,4 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: packaged-app
-        path: dist/reactautomationtoolv3
+        path: dist/reactautomationtoolv3.exe
