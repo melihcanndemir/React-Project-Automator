@@ -4,7 +4,9 @@ block_cipher = None
 a = Analysis(
     ['reactautomationtoolv3.pyw'],
     pathex=['.'],
-    binaries=[],
+    binaries=[
+    ('C:\\Path\\to\\python38.dll', '.'),
+    ],
     datas=[
         ('app_icon.py', '.'),
         ('app_icons.py', '.'),
