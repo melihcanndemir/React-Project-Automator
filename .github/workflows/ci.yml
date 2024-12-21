@@ -14,9 +14,14 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Clean previous builds
-      run: |
-        Remove-Item -Recurse -Force dist, build
       shell: pwsh
+      run: |
+        if (Test-Path dist) {
+          Remove-Item -Recurse -Force dist
+        }
+        if (Test-Path build) {
+          Remove-Item -Recurse -Force build
+        }
 
     - name: Set up Python
       uses: actions/setup-python@v2
