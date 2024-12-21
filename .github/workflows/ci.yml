@@ -28,6 +28,11 @@ jobs:
       with:
         python-version: '3.8'
 
+    - name: Check Python DLL
+      run: |
+        dir "C:\hostedtoolcache\windows\Python\3.8.10\x64\python38.dll"
+
+
     - name: Run Terminal Commands
       run: |
        echo "Checking Python Path"
