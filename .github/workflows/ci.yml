@@ -1,4 +1,4 @@
-name: Package with PyInstaller
+name: Package with PyInstaller and Release
 
 on:
   push:
@@ -38,8 +38,23 @@ jobs:
       run: |
         pyinstaller reactautomationtoolv3s.spec
 
-    - name: Upload artifact
-      uses: actions/upload-artifact@v3
+    - name: Create GitHub Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        name: packaged-app
-        path: dist/reactautomationtoolv3.exe
+        tag_name: v3.2.6  # Versiyon numarasını buradan ayarlayın
+        release_name: "React Automation Tool v3.2.6"
+        draft: false  # Taslak olarak ayarlanabilir (true) veya yayınlanabilir (false)
+        prerelease: true  # Ön sürümse true yapabilirsiniz
+
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: dist/reactautomationtoolv3.exe  # Derlenen dosya
+        asset_name: reactautomationtoolv3.exe  # Release'teki dosya adı
+        asset_content_type: application/octet-stream
