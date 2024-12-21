@@ -3,13 +3,13 @@
 block_cipher = None
 
 a = Analysis(
-    ['reactautomationtoolv3.pyw'],  # Your main script
-    pathex=[],
+    ['reactautomationtoolv3.pyw'],  # Ana Python dosyanızın adı
+    pathex=['.'],  # Gerekirse projenizin tam yolunu belirtin
     binaries=[],
     datas=[
-        ('app_icon.py', '.'),        # Include app_icon.py
-        ('app_icons.py', '.'),       # Include app_icons.py
-        ('icons/*', 'icons')         # Include all files in the icons directory
+        ('app_icon.py', '.'),        # Bu dosyalar gerçek konumlarında mı?
+        ('app_icons.py', '.'),       # Kontrol edin.
+        ('icons/*', 'icons')         # icons klasörünün var olduğundan emin olun
     ],
     hiddenimports=[],
     hookspath=[],
@@ -19,6 +19,7 @@ a = Analysis(
     win_private_assemblies=False,
     cipher=block_cipher,
 )
+
 pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 
 exe = EXE(
@@ -36,7 +37,7 @@ exe = EXE(
     upx_exclude=[],
     runtime_tmpdir=None,
     console=False,
-    icon='react.ico'  # Specify the correct path to your icon file here
+    icon='react.ico' # react.ico dosyası aynı dizinde mi? Kontrol edin.
 )
 
 coll = COLLECT(
